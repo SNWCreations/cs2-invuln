@@ -1,7 +1,9 @@
 # cs2-invuln
 
 A simple Counter-Strike 2 plugin which could
- make player invulnerable (ignores all damage).
+ make player invulnerable (ignores all damage),
+ built on the top of
+[CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp).
 
 Usage: `!invuln` in game chat, requires `@css/cheats`
  permission.
