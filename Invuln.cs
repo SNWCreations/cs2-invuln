@@ -16,11 +16,10 @@ public class Invuln : BasePlugin
     public override string ModuleAuthor => "SNWCreations";
     public override string ModuleDescription => "Allow player to be invulnerable in game";
     private readonly HashSet<ulong> _invulnPlayers = [];
-    private readonly ILogger _logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger(nameof(Invuln));
 
     public override void Load(bool hotReload)
     {
-        _logger.LogInformation("Invuln Plugin by SNWCreations - Loaded!");
+        Logger.LogInformation("Invuln Plugin by SNWCreations - Loaded!");
         
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
     }
@@ -57,7 +56,7 @@ public class Invuln : BasePlugin
             state = "now";
         }
         player.PrintToChat(message);
-        _logger.LogInformation("{Player} is {State} invulnerable", player.PlayerName, state);
+        Logger.LogInformation("{Player} is {State} invulnerable", player.PlayerName, state);
     }
 
     private bool CheckInvuln(CCSPlayerController? target)
