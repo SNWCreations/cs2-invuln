@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -21,32 +22,14 @@ public class Invuln : BasePlugin
     {
         _logger.LogInformation("Invuln Plugin by SNWCreations - Loaded!");
         
-        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(hook =>
-        {
-            var entity = hook.GetParam<CEntityInstance>(0);
-            var damageInfo = hook.GetParam<CTakeDamageInfo>(1);
-            if (entity is { IsValid: true, DesignerName: "player" })
-            {
-                var pawn = entity.As<CCSPlayerPawn>();
-                if (pawn is { IsValid: true })
-                {
-                    var player = pawn.OriginalController.Get();
-                    if (player is { IsValid: true })
-                    {
-                        if (CheckInvuln(player))
-                        {
-                            damageInfo.Damage = 0;
-                        }
-                    }
-                }
-            }
-            return HookResult.Continue;
-        }, HookMode.Pre);
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
     }
 
     public override void Unload(bool hotReload)
     {
         _invulnPlayers.Clear();
+
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
     }
 
     [ConsoleCommand("css_invuln", "Make player invulnerable")]
@@ -82,5 +65,27 @@ public class Invuln : BasePlugin
         if (target == null) return false;
         var userId = target.SteamID;
         return _invulnPlayers.Contains(userId);
+    }
+
+    private HookResult OnTakeDamage(DynamicHook hook)
+    {
+        var entity = hook.GetParam<CEntityInstance>(0);
+        var damageInfo = hook.GetParam<CTakeDamageInfo>(1);
+        if (entity is { IsValid: true, DesignerName: "player" })
+        {
+            var pawn = entity.As<CCSPlayerPawn>();
+            if (pawn is { IsValid: true })
+            {
+                var player = pawn.OriginalController.Get();
+                if (player is { IsValid: true })
+                {
+                    if (CheckInvuln(player))
+                    {
+                        damageInfo.Damage = 0;
+                    }
+                }
+            }
+        }
+        return HookResult.Continue;
     }
 }
