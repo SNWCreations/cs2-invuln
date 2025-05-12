@@ -59,7 +59,7 @@ public class Invuln : BasePlugin
         Logger.LogInformation("{Player} is {State} invulnerable", player.PlayerName, state);
     }
 
-    private bool CheckInvuln(CCSPlayerController? target)
+    private bool CheckInvuln(CBasePlayerController? target)
     {
         if (target == null) return false;
         var userId = target.SteamID;
@@ -75,7 +75,7 @@ public class Invuln : BasePlugin
             var pawn = entity.As<CCSPlayerPawn>();
             if (pawn is { IsValid: true })
             {
-                var player = pawn.OriginalController.Get();
+                var player = pawn.Controller.Get();
                 if (player is { IsValid: true })
                 {
                     if (CheckInvuln(player))
